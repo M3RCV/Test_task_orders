@@ -16,7 +16,6 @@ class OrderItemResponse(OrderItemBase):
 class OrderResponse(OrderInDB):
     """Схема заказа в ответе API"""
     items_count: int
-    user_email: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

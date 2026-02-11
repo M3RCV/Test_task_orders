@@ -5,38 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="31fea7e4-81e5-49cf-b424-f54c1b326623" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/order_service.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/api/dependencies/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/api/router/endponts/auth.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/api/router/endponts/health.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/api/router/endponts/orders.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/celery/celery_app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/celery/tasks.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/cache.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/database.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/security.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/db/base.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/db/dao/dao.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/db/dao/orders_dao.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/db/dao/users_dao.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/db/models/order.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/db/models/user.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/db/session.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/schemas/base.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/schemas/request/order.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/schemas/request/user.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/schemas/response/order.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/schemas/response/user.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/consumer/consumer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/kafka.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/db/redis/session.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/tasks/celery_task.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/dependencies/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/dependencies/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/router/endponts/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/router/endponts/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/router/endponts/orders.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/router/endponts/orders.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/dao/orders_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/dao/orders_dao.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/models/order.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/models/order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/schemas/response/order.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/response/order.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,6 +35,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "M3RCV"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/M3RCV/Test_task_orders.git",
+    "accountId": "e7ff65fa-8135-4837-92bb-2c2ac8bef7d0"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -65,11 +59,13 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.config.executor": "Run",
+    "Python.consumer.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.tests.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+    "settings.editor.selected.configurable": "com.jetbrains.python.black.configuration.BlackFormatterConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">

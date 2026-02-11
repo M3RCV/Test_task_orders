@@ -53,7 +53,6 @@ class Order(BaseUUID):
     # Связь с пользователем
     user: Mapped["User"] = relationship(
         "User",
-        back_populates="orders",
         lazy="joined"  # Всегда загружаем пользователя с заказом
     )
 

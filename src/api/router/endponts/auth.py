@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.security import decode_token, get_password_hash, verify_password, create_access_token
+from src.core.security import get_password_hash, verify_password, create_access_token, decode_token
 from src.db.session import get_db
 from src.db.dao.users_dao import UserDAO
 from src.db.models.user import User
@@ -13,9 +13,7 @@ from src.schemas.response.user import UserResponse, TokenResponse
 
 router_auth = APIRouter(tags=["auth"])
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl=f"api/v1/auth/token"
-)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"api/v1/auth/token")
 
 
 async def get_current_user(
@@ -68,11 +66,21 @@ async def get_current_user(
 
     return user
 
+
+async def get_current_active_user(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    """Получение текущего активного пользователя"""
+    if not current_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user"
+        )
+    return current_user
+
+
 @router_auth.post("/register", response_model=UserResponse)
-async def register(
-        user_data: UserCreateRequest,
-        db: AsyncSession = Depends(get_db)
-):
+async def register(user_data: UserCreateRequest, db: AsyncSession = Depends(get_db)):
     """Регистрация нового пользователя"""
     user_dao = UserDAO(User, db)
 
@@ -80,8 +88,7 @@ async def register(
     existing_user = await user_dao.get_by_email(user_data.email)
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
         )
 
     # Хешируем пароль
@@ -92,7 +99,7 @@ async def register(
         "email": user_data.email,
         "hashed_password": hashed_password,
         "is_active": True,
-        "is_admin": False
+        "is_admin": False,
     }
 
     user = await user_dao.create(user_dict)
@@ -101,8 +108,7 @@ async def register(
 
 @router_auth.post("/token", response_model=TokenResponse)
 async def login_for_token(
-        form_data: OAuth2PasswordRequestForm = Depends(),
-        db: AsyncSession = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
     """Эндпоинт для OAuth2 (используется Swagger UI)"""
     user_dao = UserDAO(User, db)
@@ -121,42 +127,12 @@ async def login_for_token(
     return TokenResponse(access_token=access_token, token_type="bearer")
 
 
-@router_auth.post("/login", response_model=TokenResponse)
-async def login(
-        email: str,
-        password: str,
-        db: AsyncSession = Depends(get_db)
-):
-    """Альтернативный эндпоинт для логина (простой POST)"""
-    user_dao = UserDAO(User, db)
-
-    user = await user_dao.get_by_email(email)
-    if not user or not verify_password(password, user.hashed_password):
-        raise HTTPException(401, "Incorrect email or password")
-
-    access_token = create_access_token(data={"sub": user.email})
-    return TokenResponse(access_token=access_token, token_type="bearer")
-
-
-async def get_current_active_user(
-    current_user: User = Depends(get_current_user)
-) -> User:
-    """Получение текущего активного пользователя"""
-    if not current_user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
-        )
-    return current_user
-
 @router_auth.get("/me")
-async def read_current_user(
-    current_user: User = Depends(get_current_active_user)
-):
+async def read_current_user(current_user: User = Depends(get_current_active_user)):
     """Получение информации о текущем пользователе"""
     return {
         "id": current_user.id,
         "email": current_user.email,
         "is_active": current_user.is_active,
-        "is_admin": current_user.is_admin
+        "is_admin": current_user.is_admin,
     }
