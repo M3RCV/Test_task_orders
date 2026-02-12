@@ -8,7 +8,6 @@ DATABASE_URL = settings.database_url
 # Создаём движок
 engine = create_async_engine(
     DATABASE_URL,
-    # очень полезные параметры (рекомендую)
     echo=False,                     # True → будет показывать все SQL-запросы
     future=True,
     pool_pre_ping=True,             # проверяет соединение перед выдачей из пула
@@ -21,7 +20,7 @@ engine = create_async_engine(
 async_session = async_sessionmaker(
     engine,
     class_=AsyncSession,
-    expire_on_commit=False          # очень важно для FastAPI
+    expire_on_commit=False
 )
 
 async def get_db() -> AsyncSession:

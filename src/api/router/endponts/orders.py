@@ -1,34 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from src.api.router.endponts.auth import get_current_active_user
 from src.core.kafka import publish_new_order
 from src.db.dao.orders_dao import OrderDAO
 from src.db.models.order import Order
 from src.db.models.user import User
+from src.db.redis.redis_utils import get_cached_order, cache_order, invalidate_order_cache
+from src.db.redis.session import get_redis
 from src.db.session import get_db
-from src.schemas.request.order import OrderCreateRequest
+from src.schemas.request.order import OrderCreateRequest, OrderStatusUpdate
 from src.schemas.response.order import OrderResponse
 from uuid import UUID
-import json
-from dotenv import load_dotenv
-import os
-
-#load_dotenv()
-#RABBITMQ_URL = os.getenv("RABBITMQ_URL")
 
 router_order = APIRouter(
     prefix="/orders", tags=["orders"], dependencies=[Depends(get_current_active_user)]
 )
-
-
-# def publish_to_queue(order_id: str):
-#     params = pika.URLParameters(RABBITMQ_URL)
-#     connection = pika.BlockingConnection(params)
-#     channel = connection.channel()
-#     channel.queue_declare(queue="new_order")
-#     channel.basic_publish(exchange="", routing_key="new_order", body=order_id)
-#     connection.close()
 
 
 @router_order.post("/", response_model=OrderResponse)
@@ -38,11 +26,20 @@ async def create_order_endpoint(
     current_user: User = Depends(get_current_active_user)
 ):
     order_dao = OrderDAO(Order, db)
+
+    total_price = 0.0
+    for item in order_request.items:
+        total_price += item.quantity * item.price
+
+    order_data = order_request.model_dump(exclude_unset=True)
+    order_data["items"] = [item.model_dump() for item in order_request.items]
+
     order_dict = {
-        "items": order_request.items,
-        "total_price": order_request.total_price,
-        "status": order_request.status
+        "items": order_data["items"],
+        "total_price": total_price,  # ← перезаписываем!
+        "status": order_data["status"] or "PENDING",
     }
+
     order = await order_dao.create(
         order_dict,
         user_id = current_user.id,
@@ -51,41 +48,107 @@ async def create_order_endpoint(
     return OrderResponse.from_orm(order)
 
 
-# @router_order.get("/{order_id}/", response_model=OrderResponse)
-# def get_order_endpoint(
-#     order_id: UUID, db: AsyncSession = Depends(get_db), redis=Depends(get_redis)
-# ):
-#     cached_order = redis.get(str(order_id))
-#     if cached_order:
-#         return json.loads(cached_order)
-#     db_order = get_order(db, order_id)
-#     if not db_order:
-#         raise HTTPException(status_code=404, detail="Order not found")
-#     redis.set(str(order_id), json.dumps(db_order.__dict__), ex=300)  # TTL 5 min
-#     return db_order
-#
-#
-# @router.patch("/{order_id}/", response_model=OrderOut)
-# @limiter.limit("10/minute")
-# def update_order_endpoint(
-#     order_id: UUID,
-#     order_update: OrderUpdate,
-#     db: Session = Depends(get_db),
-#     redis=Depends(get_redis),
-#     current_user=Depends(get_current_user),
-# ):
-#     db_order = update_order(db, order_id, order_update)
-#     if not db_order:
-#         raise HTTPException(status_code=404, detail="Order not found")
-#     redis.set(str(order_id), json.dumps(db_order.__dict__), ex=300)  # Update cache
-#     return db_order
-#
-#
-# @router.get("/user/{user_id}/", response_model=List[OrderOut])
-# @limiter.limit("10/minute")
-# def get_user_orders_endpoint(
-#     user_id: int, db: Session = Depends(get_db)
-# ):
-#     if current_user.id != user_id:
-#         raise HTTPException(status_code=403, detail="Not authorized")
-#     return get_user_orders(db, user_id)
+@router_order.get("/{order_id}/", response_model=OrderResponse)
+async def get_order_endpoint(
+    order_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    redis=Depends(get_redis),
+):
+    # 1. Пробуем взять из кэша
+    cached = await get_cached_order(order_id)
+
+    if cached:
+        return OrderResponse(**cached)
+
+    # 2. Нет в кэше → идём в базу
+    order_dao = OrderDAO(Order, db)
+    db_order = await order_dao.get(id=order_id)
+
+    if not db_order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    # 3. Готовим данные для кэширования (убираем служебные поля sqlalchemy)
+    order_dict = db_order.__dict__.copy()
+    order_dict.pop("_sa_instance_state", None)  # важно!
+
+    # Добавляем поля, которых может не быть в __dict__
+    order_dict.setdefault("user_id", db_order.user_id)
+    order_dict.setdefault("items", db_order.items)
+    order_dict.setdefault("total_price", db_order.total_price)
+    order_dict.setdefault("status", db_order.status)
+    order_dict.setdefault("created_at", db_order.created_at)
+
+    # 4. Кэшируем через hash
+    await cache_order(order_id, order_dict, ttl_seconds=300)
+
+    # 5. Возвращаем из базы
+    return db_order
+
+
+@router_order.patch("/{order_id}/", response_model=OrderResponse)
+async def update_order_status(
+    order_id: UUID,
+    update_data: OrderStatusUpdate,
+    db: AsyncSession = Depends(get_db),
+    redis=Depends(get_redis),
+):
+    """
+    Обновление статуса заказа (только авторизованные пользователи).
+    После обновления инвалидируется кэш.
+    """
+    order_dao = OrderDAO(Order, db)
+
+    # Получаем заказ из БД
+    db_order = await order_dao.get(id=order_id)
+    if not db_order:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Заказ не найден"
+        )
+
+    # Проверяем допустимый статус (если не используешь Enum в модели)
+    allowed_statuses = {"pending", "paid", "shipped", "canceled"}
+    if update_data.status not in allowed_statuses:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status: {', '.join(allowed_statuses)}"
+        )
+
+    # Обновляем в базе
+    updated_order = await order_dao.update(
+        id=order_id,
+        obj_in={"status": update_data.status}
+    )
+
+    if not updated_order:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error while updating status"
+        )
+
+    # Инвалидируем кэш
+    await invalidate_order_cache(order_id)
+
+    return updated_order
+
+
+@router_order.get("/user/{user_id}/", response_model=list[OrderResponse])
+async def get_user_orders(
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Получение списка заказов конкретного пользователя.
+    Рекомендуется проверять, что запрашивает свои заказы или админ.
+    """
+
+    order_dao = OrderDAO(Order, db)
+
+    orders = await order_dao.get_user_orders(user_id=user_id)
+
+    if not orders:
+        return []
+
+    orders_sorted = sorted(orders, key=lambda o: o.created_at, reverse=True)
+
+    return orders_sorted

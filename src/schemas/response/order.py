@@ -1,13 +1,12 @@
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional
+from pydantic import BaseModel, ConfigDict, computed_field
+from typing import List
 
-from src.schemas.base import OrderInDB, OrderStatus, OrderItemBase
+from src.schemas.base import OrderInDB, OrderItemBase
 
 
 class OrderItemResponse(OrderItemBase):
     """Схема товара в ответе API"""
-    total: float = Field(..., gt=0)
-
+    @computed_field
     @property
     def total(self) -> float:
         return self.quantity * self.price
@@ -15,10 +14,9 @@ class OrderItemResponse(OrderItemBase):
 
 class OrderResponse(OrderInDB):
     """Схема заказа в ответе API"""
-    items_count: int
-
     model_config = ConfigDict(from_attributes=True)
 
+    @computed_field
     @property
     def items_count(self) -> int:
         return len(self.items) if self.items else 0

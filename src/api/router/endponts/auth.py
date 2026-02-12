@@ -125,14 +125,3 @@ async def login_for_token(
     # Создаем токен
     access_token = create_access_token(data={"sub": user.email})
     return TokenResponse(access_token=access_token, token_type="bearer")
-
-
-@router_auth.get("/me")
-async def read_current_user(current_user: User = Depends(get_current_active_user)):
-    """Получение информации о текущем пользователе"""
-    return {
-        "id": current_user.id,
-        "email": current_user.email,
-        "is_active": current_user.is_active,
-        "is_admin": current_user.is_admin,
-    }

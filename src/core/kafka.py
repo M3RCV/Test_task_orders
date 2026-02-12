@@ -17,7 +17,7 @@ async def get_producer() -> AIOKafkaProducer:
         _producer = AIOKafkaProducer(
             bootstrap_servers=settings.kafka_bootstrap_servers,  # в docker-compose сервис kafka
             acks=1,                     # достаточно для тестового
-            compression_type="gzip",    # опционально, но приятно
+            compression_type="gzip",
         )
         await _producer.start()
         log.info("Kafka producer started")
@@ -42,13 +42,11 @@ async def publish_new_order(order_id: str, user_id: int):
         "event": "new_order",
         "order_id": order_id,
         "user_id": user_id,
-        # можешь добавить ещё что нужно
     }
     value = json.dumps(data).encode("utf-8")
 
     await producer.send_and_wait(
         topic=settings.kafka_topic,
         value=value,
-        # key=str(order_id).encode()  # если хочешь партиционирование по order_id
     )
     log.info(f"Published new_order event for order {order_id}")

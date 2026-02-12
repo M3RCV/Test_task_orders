@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-from aiokafka import AIOKafkaConsumer  # ← сюда импортируем Celery-задачу
+from aiokafka import AIOKafkaConsumer
 
 from src.core.config import settings
 from src.tasks.celery_task import process_order
@@ -30,8 +30,8 @@ async def consume():
 
                 log.info(f"Received new_order event for order {order_id}")
 
-                # ← Вот здесь кидаем задачу в Celery
-                process_order.delay(order_id)  # или .apply_async()
+                # Кидаем задачу в Celery
+                process_order.delay(order_id)
 
             except Exception as e:
                 log.exception(f"Error processing message: {e}")

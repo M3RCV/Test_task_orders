@@ -1,7 +1,16 @@
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+from typing import Optional, List
 
 from src.schemas.base import OrderBase, OrderStatus, OrderItemBase
+from src.schemas.response.order import OrderItemResponse
+
+
+class OrderStatusUpdate(BaseModel):
+    """Схема для обновления статуса заказа (запрос)"""
+    status: OrderStatus = Field(
+        ...,
+        description="Новый статус заказа"
+    )
 
 
 class OrderItemCreateRequest(OrderItemBase):
@@ -11,6 +20,7 @@ class OrderItemCreateRequest(OrderItemBase):
 
 class OrderCreateRequest(OrderBase):
     """Схема для создания заказа (запрос)"""
+    items: List[OrderItemResponse]
     pass
 
 

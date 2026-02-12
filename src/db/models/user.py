@@ -7,7 +7,6 @@ from src.db.base import Base
 
 class User(Base):
     """Модель пользователя"""
-
     __tablename__ = "users"
 
     # Используем Integer ID для пользователей (как в ТЗ: user_id int)

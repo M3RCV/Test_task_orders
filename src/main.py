@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 
-from src.api.router.endponts.health import router
 from src.api.router.endponts.auth import router_auth
 from src.api.router.endponts.orders import router_order
 from src.core.kafka import lifespan_producer
@@ -14,5 +13,4 @@ app = FastAPI(
 )
 
 app.include_router(router_auth, prefix="/api/v1/auth", tags=["auth"])
-app.include_router(router, prefix="/api/v1/health", tags=["health"])
 app.include_router(router_order, prefix="/api/v1/orders", tags=["orders"] )

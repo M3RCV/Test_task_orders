@@ -19,7 +19,6 @@ class OrderStatus(str, enum.Enum):
 
 class Order(BaseUUID):
     """Модель заказа"""
-
     __tablename__ = "orders"
 
     # Внешний ключ на пользователя (как в ТЗ: user_id int, ForeignKey на пользователей)
@@ -42,7 +41,6 @@ class Order(BaseUUID):
         nullable=False
     )
 
-    # Статус заказа (как в ТЗ: status (enum: PENDING, PAID, SHIPPED, CANCELED))
     status: Mapped[OrderStatus] = mapped_column(
         SQLEnum(OrderStatus),
         default=OrderStatus.PENDING,

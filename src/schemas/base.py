@@ -43,18 +43,18 @@ class OrderItemBase(BaseModel):
             raise ValueError('Quantity must be greater than 0')
         return v
 
+    @validator('price')
+    def validate_quantity(cls, v):
+        if v <= 0:
+            raise ValueError('Price must be greater than 0')
+        return v
+
 
 class OrderBase(BaseModel):
     """Базовая схема заказа"""
     items: List[Dict[str, Any]] = Field(default_factory=list)
-    total_price: float = Field(gt=0)
-    status: OrderStatus = OrderStatus.PENDING
 
-    @validator('total_price')
-    def validate_total_price(cls, v):
-        if v <= 0:
-            raise ValueError('Total price must be greater than 0')
-        return v
+    status: OrderStatus = OrderStatus.PENDING
 
     @validator('items')
     def validate_items(cls, v):
@@ -62,9 +62,9 @@ class OrderBase(BaseModel):
             raise ValueError('Order must contain at least one item')
         return v
 
-
 class OrderInDB(OrderBase):
     """Схема заказа в базе данных"""
+    total_price: float = Field(gt=0)
     id: uuid.UUID
     user_id: int
     created_at: datetime
