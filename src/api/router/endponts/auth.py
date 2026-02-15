@@ -2,6 +2,7 @@ from datetime import datetime
 
 from fastapi import Depends, HTTPException, status, APIRouter, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import ValidationError
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -85,7 +86,7 @@ async def get_current_active_user(
 
 
 @router_auth.post("/register", response_model=UserResponse)
-@limiter.limit("1/minute")
+@limiter.limit("6/minute")
 async def register(
     request: Request,
     user_data: UserCreateRequest,
@@ -94,26 +95,57 @@ async def register(
     """Регистрация нового пользователя"""
     user_dao = UserDAO(User, db)
 
-    # Проверяем существует ли email
-    existing_user = await user_dao.get_by_email(user_data.email)
-    if existing_user:
+    try:
+        # 1. Проверка на существование email
+        existing_user = await user_dao.get_by_email(user_data.email)
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Пользователь с таким email уже зарегистрирован"
+            )
+
+        # 2. Хеширование пароля
+        hashed_password = get_password_hash(user_data.password)
+
+        # 3. Подготовка данных для создания
+        user_dict = {
+            "email": user_data.email,
+            "hashed_password": hashed_password,
+            "is_active": True,
+            "is_admin": False,
+        }
+
+        # 4. Создание пользователя
+        user = await user_dao.create(user_dict)
+
+        # 5. Возвращаем ответ
+        return UserResponse.model_validate(user, from_attributes=True)
+
+    except ValidationError as ve:
+        # Ошибка валидации Pydantic (например, некорректный email или пароль)
+        errors = ve.errors()
+        first_error = errors[0]
+        field = first_error["loc"][-1]
+        msg = first_error["msg"]
+
+        if "email" in field.lower():
+            detail = "Incorrect email form"
+        elif "password" in field.lower():
+            detail = f"week password: {msg}"
+        else:
+            detail = f"error in data: {msg}"
+
+        raise HTTPException(status_code=422, detail=detail)
+
+    except HTTPException:
+        # Пробрасываем HTTP-исключения (например 400 от проверки)
+        raise
+
+    except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Произошла ошибка при регистрации. Попробуйте позже или обратитесь к поддержке."
         )
-
-    # Хешируем пароль
-    hashed_password = get_password_hash(user_data.password)
-
-    # Создаем пользователя
-    user_dict = {
-        "email": user_data.email,
-        "hashed_password": hashed_password,
-        "is_active": True,
-        "is_admin": False,
-    }
-
-    user = await user_dao.create(user_dict)
-    return UserResponse.from_orm(user)
 
 
 @router_auth.post("/token", response_model=TokenResponse)
