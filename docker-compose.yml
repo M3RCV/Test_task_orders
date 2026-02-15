@@ -18,6 +18,18 @@ services:
     networks:
       - order_network
 
+  # Миграции alembic
+  migrations:
+    build: .
+    command: alembic upgrade head
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy   # ждёт, пока postgres станет healthy
+    networks:
+      - order_network
+
   # Redis
   redis:
     image: redis:7-alpine
@@ -87,6 +99,7 @@ services:
       - kafka
       - redis
       - postgres
+      - migrations
     networks:
       - order_network
 

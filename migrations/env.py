@@ -11,20 +11,17 @@ from alembic import context
 import sys
 import os
 
-# ⚠️ КРИТИЧЕСКИ ВАЖНО: Добавляем путь к проекту
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# ⚠️ Импортируем НАШИ модели и настройки
 from src.core.config import settings
 from src.db.base import Base
-from src.db.models import order, user
 
-# Загружаем конфигурацию Alembic
 config = context.config
 
 # Настраиваем логирование
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+    config.set_main_option("sqlalchemy.url", settings.database_url)
 
 # Указываем метаданные для автогенерации миграций
 target_metadata = Base.metadata
