@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -13,6 +15,11 @@ from src.db.session import get_db
 from src.schemas.request.order import OrderCreateRequest, OrderStatusUpdate
 from src.schemas.response.order import OrderResponse
 from uuid import UUID
+from fastapi import Request
+
+
+limiter = Limiter(key_func=get_remote_address)
+
 
 router_order = APIRouter(
     prefix="/orders", tags=["orders"], dependencies=[Depends(get_current_active_user)]
@@ -20,7 +27,9 @@ router_order = APIRouter(
 
 
 @router_order.post("/", response_model=OrderResponse)
+@limiter.limit("10/minute")
 async def create_order_endpoint(
+    request: Request,
     order_request: OrderCreateRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
@@ -49,7 +58,9 @@ async def create_order_endpoint(
 
 
 @router_order.get("/{order_id}/", response_model=OrderResponse)
+@limiter.limit("10/minute")
 async def get_order_endpoint(
+    request: Request,
     order_id: UUID,
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis),
@@ -86,7 +97,9 @@ async def get_order_endpoint(
 
 
 @router_order.patch("/{order_id}/", response_model=OrderResponse)
+@limiter.limit("10/minute")
 async def update_order_status(
+    request: Request,
     order_id: UUID,
     update_data: OrderStatusUpdate,
     db: AsyncSession = Depends(get_db),
@@ -133,7 +146,9 @@ async def update_order_status(
 
 
 @router_order.get("/user/{user_id}/", response_model=list[OrderResponse])
+@limiter.limit("10/minute")
 async def get_user_orders(
+    request: Request,
     user_id: int,
     db: AsyncSession = Depends(get_db),
 ):

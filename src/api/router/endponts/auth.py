@@ -1,10 +1,17 @@
 from datetime import datetime
 
-from fastapi import Depends, HTTPException, status, APIRouter
+from fastapi import Depends, HTTPException, status, APIRouter, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.security import get_password_hash, verify_password, create_access_token, decode_token
+from src.core.security import (
+    get_password_hash,
+    verify_password,
+    create_access_token,
+    decode_token,
+)
 from src.db.session import get_db
 from src.db.dao.users_dao import UserDAO
 from src.db.models.user import User
@@ -15,10 +22,11 @@ router_auth = APIRouter(tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"api/v1/auth/token")
 
+limiter = Limiter(key_func=get_remote_address)
+
 
 async def get_current_user(
-        token: str = Depends(oauth2_scheme),
-        db: AsyncSession = Depends(get_db)
+    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
 ) -> User:
     """Получение текущего пользователя из JWT токена"""
 
@@ -53,34 +61,36 @@ async def get_current_user(
 
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
 
     # Проверяем активен ли пользователь
     if not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
         )
 
     return user
 
 
 async def get_current_active_user(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> User:
     """Получение текущего активного пользователя"""
     if not current_user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
         )
     return current_user
 
 
 @router_auth.post("/register", response_model=UserResponse)
-async def register(user_data: UserCreateRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("1/minute")
+async def register(
+    request: Request,
+    user_data: UserCreateRequest,
+    db: AsyncSession = Depends(get_db)
+):
     """Регистрация нового пользователя"""
     user_dao = UserDAO(User, db)
 
@@ -107,8 +117,11 @@ async def register(user_data: UserCreateRequest, db: AsyncSession = Depends(get_
 
 
 @router_auth.post("/token", response_model=TokenResponse)
+@limiter.limit("6/minute")
 async def login_for_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_db)
 ):
     """Эндпоинт для OAuth2 (используется Swagger UI)"""
     user_dao = UserDAO(User, db)

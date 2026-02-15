@@ -44,7 +44,7 @@ class OrderItemBase(BaseModel):
         return v
 
     @validator('price')
-    def validate_quantity(cls, v):
+    def validate_price(cls, v):
         if v <= 0:
             raise ValueError('Price must be greater than 0')
         return v

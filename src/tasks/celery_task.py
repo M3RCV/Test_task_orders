@@ -13,4 +13,3 @@ celery_app = Celery(
 def process_order(order_id: str):
     time.sleep(2)
     print(f"Order {order_id} processed")  # как просили в ТЗ
-    # здесь можно обновить статус в БД и инвалидировать кэш

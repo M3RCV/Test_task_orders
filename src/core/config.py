@@ -51,6 +51,12 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 60
 
     # ======================
+    # CORS
+    # ======================
+    backend_origins: str
+    backend_allow_credentials: bool
+
+    # ======================
     # Проект
     # ======================
     project_name: str = "Order Management Service"
