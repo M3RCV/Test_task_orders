@@ -4,6 +4,7 @@ from src.core.config import settings
 
 
 def setup_cors(app: FastAPI) -> FastAPI:
+    """Базовый CORS middleware, можно расширять"""
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.backend_origins,

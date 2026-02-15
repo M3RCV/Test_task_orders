@@ -34,6 +34,7 @@ async def create_order_endpoint(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
+    """"Эндпоинт для создания заказа"""
     order_dao = OrderDAO(Order, db)
 
     total_price = 0.0
@@ -65,6 +66,7 @@ async def get_order_endpoint(
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis),
 ):
+    """"Получение заказа по его id"""
     # 1. Пробуем взять из кэша
     cached = await get_cached_order(order_id)
 
