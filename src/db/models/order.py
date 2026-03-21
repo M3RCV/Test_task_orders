@@ -36,7 +36,7 @@ class Order(BaseUUID):
     )
 
     # Общая цена (в формате Decimal)
-    total_price: Mapped[Decimal] = mapped_column(Numeric(10,2), nullable=False)
+    total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
     status: Mapped[OrderStatus] = mapped_column(
         SQLEnum(OrderStatus), default=OrderStatus.PENDING, nullable=False, index=True

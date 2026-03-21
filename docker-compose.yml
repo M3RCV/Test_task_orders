@@ -80,7 +80,8 @@ services:
       KAFKA_CLUSTERS_0_NAME: "local"
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:${KAFKA_INTERNAL_PORT}"
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     networks:
       - order_network
 
@@ -126,7 +127,8 @@ services:
     environment:
       - PYTHONPATH=/app
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     networks:
       - order_network
 

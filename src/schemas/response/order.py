@@ -15,7 +15,6 @@ class OrderResponse(OrderInDB):
         return len(self.items) if self.items else 0
 
 
-
 class OrderListResponse(BaseModel):
     """Схема списка заказов в ответе API"""
 

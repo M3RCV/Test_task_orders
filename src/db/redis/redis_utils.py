@@ -106,4 +106,3 @@ async def get_or_set(
     await set_order(order_id, order_dict, ttl_seconds)
 
     return db_order
-
