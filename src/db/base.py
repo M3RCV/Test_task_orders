@@ -9,15 +9,13 @@ class Base(AsyncAttrs, DeclarativeBase):
 
     # Общие поля для всех моделей
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=datetime.utcnow,
-        nullable=False
+        DateTime(timezone=True), default=datetime.utcnow, nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
-        nullable=False
+        nullable=False,
     )
 
 
@@ -28,8 +26,5 @@ class BaseUUID(Base):
     __abstract__ = True
 
     id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True,
-        default=uuid.uuid4,
-        nullable=False,
-        index=True
+        primary_key=True, default=uuid.uuid4, nullable=False, index=True
     )

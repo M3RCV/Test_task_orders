@@ -88,9 +88,7 @@ async def get_current_active_user(
 @router_auth.post("/register", response_model=UserResponse)
 @limiter.limit("6/minute")
 async def register(
-    request: Request,
-    user_data: UserCreateRequest,
-    db: AsyncSession = Depends(get_db)
+    request: Request, user_data: UserCreateRequest, db: AsyncSession = Depends(get_db)
 ):
     """Регистрация нового пользователя"""
     user_dao = UserDAO(User, db)
@@ -101,7 +99,7 @@ async def register(
         if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Пользователь с таким email уже зарегистрирован"
+                detail="Пользователь с таким email уже зарегистрирован",
             )
 
         # 2. Хеширование пароля
@@ -144,7 +142,7 @@ async def register(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Произошла ошибка при регистрации. Попробуйте позже или обратитесь к поддержке."
+            detail="Произошла ошибка при регистрации. Попробуйте позже или обратитесь к поддержке.",
         )
 
 
@@ -153,7 +151,7 @@ async def register(
 async def login_for_token(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Эндпоинт для OAuth2 (используется Swagger UI)"""
     user_dao = UserDAO(User, db)

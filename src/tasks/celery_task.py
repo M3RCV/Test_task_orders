@@ -9,6 +9,7 @@ celery_app = Celery(
     backend=settings.celery_result_backend,
 )
 
+
 @celery_app.task(name="process_order")
 def process_order(order_id: str):
     time.sleep(2)

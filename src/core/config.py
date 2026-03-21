@@ -5,7 +5,6 @@ from typing import List
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 # путь к корню проекта
 BASE_DIR = Path(__file__).resolve().parents[2]
 
@@ -79,13 +78,14 @@ class Settings(BaseSettings):
         env_file=BASE_DIR / ".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="ignore",          # игнорировать POSTGRES_* из docker
+        extra="ignore",  # игнорировать POSTGRES_* из docker
     )
 
 
 # ======================
 # Singleton settings
 # ======================
+
 
 @lru_cache
 def get_settings() -> Settings:

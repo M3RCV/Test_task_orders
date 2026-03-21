@@ -51,7 +51,5 @@ class BaseDAO(Generic[ModelType]):
         return result.rowcount > 0
 
     async def filter_by(self, **kwargs) -> List[ModelType]:
-        result = await self.session.execute(
-            select(self.model).filter_by(**kwargs)
-        )
+        result = await self.session.execute(select(self.model).filter_by(**kwargs))
         return list(result.scalars().all())

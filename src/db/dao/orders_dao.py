@@ -1,5 +1,10 @@
 from typing import List
+from uuid import UUID
+
+from fastapi import HTTPException
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.db.dao.dao import BaseDAO
 from src.db.models.order import Order, OrderStatus
 
@@ -12,13 +17,11 @@ class OrderDAO(BaseDAO[Order]):
         return list(result.scalars().all())
 
     async def get_by_status(self, status: OrderStatus) -> List[Order]:
-        result = await self.session.execute(
-            select(Order).where(Order.status == status)
-        )
+        result = await self.session.execute(select(Order).where(Order.status == status))
         return list(result.scalars().all())
 
     async def create(self, obj_in: dict, user_id: int) -> Order:
-        create_data = obj_in.copy()           # чтобы не менять оригинальный словарь
+        create_data = obj_in.copy()  # чтобы не менять оригинальный словарь
         create_data["user_id"] = user_id
         db_obj = self.model(**create_data)
         self.session.add(db_obj)

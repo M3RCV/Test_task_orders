@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from starlette.responses import HTMLResponse
 
-from src.api.router.endponts.auth import router_auth
-from src.api.router.endponts.orders import router_order
+from src.api.router.endpoints.auth import router_auth
+from src.api.router.endpoints.orders import router_order
 from src.core.kafka import lifespan_producer
 
 app = FastAPI(
@@ -13,6 +13,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
@@ -27,6 +28,7 @@ async def root():
         ID заказов — автоматически генерируемые UUID v4
     </p>
     """
+
 
 app.include_router(router_auth, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(router_order, prefix="/api/v1/orders", tags=["orders"])

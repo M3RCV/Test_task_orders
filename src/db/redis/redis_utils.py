@@ -3,12 +3,19 @@ import logging
 from typing import Optional, Dict, Any
 from uuid import UUID
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.db.models.order import Order
 from src.db.redis.session import get_redis
 
+from src.db.dao.orders_dao import OrderDAO
 
 logger = logging.getLogger(__name__)
 
-async def cache_order(order_id: str | UUID, order_data: dict, ttl_seconds: int = 300) -> None:
+
+async def set_order(
+    order_id: str | UUID, order_data: dict, ttl_seconds: int = 300
+) -> None:
     """
     Сохраняет заказ в Redis как hash.
     order_id может быть str или UUID.
@@ -75,3 +82,28 @@ async def invalidate_order_cache(order_id: str | UUID):
         logger.debug(f"Cache invalidated for order {order_id}")
     else:
         logger.debug(f"No cache to invalidate for order {order_id}")
+
+
+async def get_or_set(
+    db: AsyncSession,
+    order_id: str | UUID,
+    ttl_seconds: int = 300,
+):
+    cached = await get_cached_order(order_id)
+
+    if cached:
+        return cached
+
+    order_dao = OrderDAO(Order, db)
+    db_order = await order_dao.get(id=order_id)
+
+    if not db_order:
+        return None
+
+    order_dict = db_order.__dict__.copy()
+    order_dict.pop("_sa_instance_state", None)
+
+    await set_order(order_id, order_dict, ttl_seconds)
+
+    return db_order
+

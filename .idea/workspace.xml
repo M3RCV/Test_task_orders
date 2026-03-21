@@ -5,9 +5,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="31fea7e4-81e5-49cf-b424-f54c1b326623" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/order_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/fixtures/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/fixtures/fixtures.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/order_service.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/order_service.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/router/endponts/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/router/endponts/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/0c62a7c039d2_fix_circular_imports_2_0.py" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/versions/0c62a7c039d2_fix_circular_imports_2_0.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/67f13083a6a3_initial_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/versions/67f13083a6a3_initial_schema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/ac356120f82a_fix_circular_imports.py" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/versions/ac356120f82a_fix_circular_imports.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/d7392c8e3793_initial_schema_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/versions/d7392c8e3793_initial_schema_v2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/router/endponts/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/router/endpoints/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/router/endponts/orders.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/router/endpoints/orders.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/cors.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/cors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/kafka.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/kafka.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/security.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/dao/dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/dao/dao.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/dao/orders_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/dao/orders_dao.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/dao/users_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/dao/users_dao.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/models/order.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/models/order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/models/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/redis/redis_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/redis/redis_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/redis/session.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/redis/session.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/session.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/session.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/schemas/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/schemas/request/order.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/request/order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/schemas/request/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/request/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/schemas/response/order.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/response/order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/schemas/response/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/response/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tasks/celery_task.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tasks/celery_task.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +72,6 @@
   &quot;associatedIndex&quot;: 5
 }</component>
   <component name="ProjectId" id="39OHwn3wftZxl1A39ZOSEjh5PfS" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -50,15 +81,28 @@
     "Python.config.executor": "Run",
     "Python.consumer.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.order_service.executor": "Run",
     "Python.tests.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "git-widget-placeholder": "main",
-    "settings.editor.selected.configurable": "com.jetbrains.python.black.configuration.BlackFormatterConfigurable"
+    "last_opened_file_path": "/home/maxim/PycharmProjects/order_service",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.black.configuration.BlackFormatterConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src" />
       <recent name="D:\Programming\order_service\src\db\dao" />
       <recent name="D:\Programming\order_service\src\api\dependencies" />
     </key>
@@ -66,7 +110,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-fc1d50d2d915-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.24978.54" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.31033.139" />
+        <option value="bundled-python-sdk-2653e85de345-6d6dccd035ac-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.31033.139" />
       </set>
     </attachedChunks>
   </component>
@@ -78,7 +123,14 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1770560437588</updated>
+      <workItem from="1772202963740" duration="23017000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/order_service$order_service.coverage" NAME="order_service Coverage Results" MODIFIED="1772284165289" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/services" />
   </component>
 </project>

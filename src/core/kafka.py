@@ -5,18 +5,18 @@ import logging
 
 from src.core.config import settings
 
-
 log = logging.getLogger(__name__)
 
 # Глобальная переменная (будет создана один раз)
 _producer: AIOKafkaProducer | None = None
+
 
 async def get_producer() -> AIOKafkaProducer:
     global _producer
     if _producer is None:
         _producer = AIOKafkaProducer(
             bootstrap_servers=settings.kafka_bootstrap_servers,  # в docker-compose сервис kafka
-            acks=1,                     # достаточно для тестового
+            acks=1,  # достаточно для тестового
             compression_type="gzip",
         )
         await _producer.start()
